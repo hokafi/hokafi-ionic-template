@@ -1,10 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, LoadingController, Loading } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Storage } from '@ionic/storage';
 
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
+import { LoginPage } from '../pages/login/login';
+import { AuthServiceProvider } from '../providers/AuthServiceProvider/AuthServiceProvider';
 
 @Component({
   templateUrl: 'app.html'
@@ -12,12 +15,15 @@ import { ListPage } from '../pages/list/list';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+  rootPage;
+  loading : Loading;
+  pages: Array<{ title: string, component: any }>;
 
-  pages: Array<{title: string, component: any}>;
-
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform, public statusBar: StatusBar
+    , public splashScreen: SplashScreen, private storage: Storage,
+    public auth  :AuthServiceProvider, private loadingCtrl: LoadingController) {
     this.initializeApp();
+    console.log("Component") 
 
     // used for an example of ngFor and navigation
     this.pages = [
@@ -26,9 +32,24 @@ export class MyApp {
     ];
 
   }
-
+  showLoading() {
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...',
+      dismissOnPageChange: true
+    });
+    this.loading.present();
+  }
   initializeApp() {
     this.platform.ready().then(() => {
+      console.log("befor");
+      this.showLoading();
+      this.auth.getUserInfo().subscribe(user =>{
+        if(user)
+          this.rootPage = HomePage;
+        else  
+          this.rootPage = LoginPage;
+        this.loading.dismiss();
+      })
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();

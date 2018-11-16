@@ -1,18 +1,24 @@
-<ion-header>
-  <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
-</ion-header>
+<ion-menu [content]="content">
+  <ion-header>
+    <ion-navbar color="dark">
+      <img style="width : 48px;border-radius : 50%" [src]="picture" alt="Select Image" />
+      <!-- <ion-icon name="log-out"></ion-icon> -->
+      <ion-buttons end> 
+        <button ion-button (click)="logout()">
+          <ion-icon style="font-size : 1.8em" name="log-out"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ion-navbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+        {{p.title}}
+      </button>
+    </ion-list>
+  </ion-content>
 
-<ion-content padding>
-  <h3>Ionic Menu Starter</h3>
+</ion-menu>
 
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
-
-  <button ion-button secondary menuToggle>Toggle Menu</button>
-</ion-content>
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
